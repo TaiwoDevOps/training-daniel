@@ -47,5 +47,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<!-- Config for the app -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your device gallery for better experience</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to your device gallery for better experience</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to your device gallery for better experience</string>
 </dict>
 </plist>

@@ -37,16 +37,20 @@ class IdCardAppBar extends StatelessWidget {
                 size: 28,
               ),
             ),
-            const Spacer(),
-            Text(
-              headerTitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 14),
+                child: Text(
+                  headerTitle,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.clip,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ),
             ),
-            const Spacer(),
           ],
         ),
       ),

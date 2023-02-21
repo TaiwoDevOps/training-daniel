@@ -1,10 +1,41 @@
+import 'dart:io';
+
 import 'package:company_id_card/data/staff_data.dart';
 import 'package:company_id_card/widget/id_card_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class IdCardPreviewScreen extends StatelessWidget {
+class IdCardPreviewScreen extends StatefulWidget {
   const IdCardPreviewScreen({super.key, required this.staffData});
   final StaffData staffData;
+
+  @override
+  State<IdCardPreviewScreen> createState() => _IdCardPreviewScreenState();
+}
+
+class _IdCardPreviewScreenState extends State<IdCardPreviewScreen> {
+  final ImagePicker _picker = ImagePicker();
+
+  List<XFile>? _imageFileList;
+
+  void _setImageFileListFromFile(XFile? value) {
+    _imageFileList = value == null ? null : <XFile>[value];
+    Navigator.maybePop(context);
+  }
+
+  _displayPickImageDialog(ImageSource source) async {
+    _imageFileList = [];
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+      );
+      setState(() {
+        _setImageFileListFromFile(pickedFile);
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,36 +44,88 @@ class IdCardPreviewScreen extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(150),
         child: IdCardAppBar(
-          headerTitle: staffData.companyName,
+          headerTitle: widget.staffData.companyName,
         ),
       ),
 
       //body
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(
             height: 30,
           ),
           Center(
             child: Container(
-              height: 317,
-              width: 268,
+              height: 150,
+              width: 130,
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
-                image: const DecorationImage(
-                  image: NetworkImage(
-                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+                  shape: BoxShape.rectangle,
+                  border: Border.all(
+                    width: 4,
                   ),
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
-                ),
-                shape: BoxShape.circle,
-                border: Border.all(
-                  width: 15,
-                ),
-              ),
+                  borderRadius: BorderRadius.circular(8)),
+              child: _imageFileList == null || _imageFileList!.isEmpty
+                  ? GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return SizedBox(
+                                height: 200,
+                                child: Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    const Text(
+                                      "Select an option",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    ListTile(
+                                      leading: const Icon(
+                                        Icons.photo_album_outlined,
+                                      ),
+                                      title: const Text(
+                                        'Gallery',
+                                      ),
+                                      onTap: () {
+                                        _displayPickImageDialog(
+                                            ImageSource.gallery);
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: const Icon(
+                                        Icons.photo_camera_outlined,
+                                      ),
+                                      title: const Text(
+                                        'Camera',
+                                      ),
+                                      onTap: () {
+                                        _displayPickImageDialog(
+                                            ImageSource.camera);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            });
+                      },
+                      child: const Icon(
+                        Icons.person_add,
+                        color: Colors.black,
+                        size: 35,
+                      ),
+                    )
+                  : Image.file(
+                      File(_imageFileList![0].path),
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
           const SizedBox(
@@ -53,22 +136,40 @@ class IdCardPreviewScreen extends StatelessWidget {
           //1. open the ID card generator app and enter the Company name, company email, staff ID, staff position, staff name and staff image
           //2. Generate an ID card based on the previously entered staff name
           //3. Change the profile picture based on the previously entered staff name
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 50),
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  width: 10,
-                ),
-              ),
+          _displayStaffInfo('Staff name: ', widget.staffData.staffName),
+          _displayStaffInfo('Staff Email: ', widget.staffData.email),
+          _displayStaffInfo(
+              'Staff phone number: ', widget.staffData.phoneNumber),
+          _displayStaffInfo('Staff ID: ', widget.staffData.staffID),
+          _displayStaffInfo('Company email: ', widget.staffData.companyEmail),
+        ],
+      ),
+    );
+  }
+
+  Container _displayStaffInfo(String title, String desc) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 50, vertical: 4),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            child: const Center(
-              child: Text(
-                "Staff name",
-                style: TextStyle(fontSize: 32),
-              ),
-            ),
+          ),
+          const SizedBox(
+            width: 12,
+          ),
+          Text(
+            desc,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
         ],
       ),
