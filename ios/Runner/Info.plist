@@ -55,5 +55,7 @@
 	<string>This app needs access to your device gallery for better experience</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs access to your device gallery for better experience</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app needs access to your device gallery for better experience</string>
 </dict>
 </plist>
