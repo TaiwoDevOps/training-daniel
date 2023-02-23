@@ -3,6 +3,7 @@ import 'package:company_id_card/id_card_screens/preview_id.dart';
 import 'package:company_id_card/widget/id_card_appbar.dart';
 import 'package:company_id_card/widget/id_card_input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:quickalert/quickalert.dart';
 
 class CreateStaffIDInputScreen extends StatefulWidget {
   const CreateStaffIDInputScreen({super.key, required this.companyName});
@@ -123,7 +124,13 @@ class _CreateStaffIDInputScreenState extends State<CreateStaffIDInputScreen> {
                         ),
                       );
                     } else {
-                      print("Enter staff information");
+                      // print("Enter staff information");
+                      QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.error,
+                        title: 'Oops...',
+                        text: 'You must enter the Staff Information',
+                      );
                     }
                   },
                   style: const ButtonStyle(

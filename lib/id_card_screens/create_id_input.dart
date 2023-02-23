@@ -1,6 +1,8 @@
 import 'package:company_id_card/id_card_screens/create_staff_input.dart';
 import 'package:company_id_card/widget/id_card_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:quickalert/quickalert.dart';
+// import 'package:quickalert/quickalert.dart';
 
 class CreateIDInputScreen extends StatefulWidget {
   const CreateIDInputScreen({super.key});
@@ -23,7 +25,14 @@ class _CreateIDInputScreenState extends State<CreateIDInputScreen> {
       floatingActionButton: GestureDetector(
         onTap: () {
           if (_companyName.text.isEmpty) {
-            print('Enter company name');
+            // print('Enter company name');
+         
+            QuickAlert.show(
+              context: context,
+              type: QuickAlertType.error,
+              title: 'Oops...',
+              text: 'You must enter the company Name',
+            );
           } else {
             Navigator.push(
               context,
