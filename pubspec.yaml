@@ -40,6 +40,9 @@ dependencies:
   image_gallery_saver: ^1.7.1
   path_provider: ^2.0.13
 
+  # network handlers
+  dio: ^5.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

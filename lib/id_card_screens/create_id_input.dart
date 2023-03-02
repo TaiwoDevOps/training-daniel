@@ -1,3 +1,5 @@
+import 'package:company_id_card/core/network.dart';
+import 'package:company_id_card/data/company_dto.dart';
 import 'package:company_id_card/id_card_screens/create_staff_input.dart';
 import 'package:company_id_card/widget/id_card_appbar.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,8 @@ class CreateIDInputScreen extends StatefulWidget {
 
 class _CreateIDInputScreenState extends State<CreateIDInputScreen> {
   final _companyName = TextEditingController();
+  final NetworkHandler _networkHandler = NetworkHandler();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -20,48 +24,73 @@ class _CreateIDInputScreenState extends State<CreateIDInputScreen> {
         preferredSize: Size.fromHeight(80),
         child: IdCardAppBar(headerTitle: 'Company ID-Card generator'),
       ),
-      floatingActionButton: GestureDetector(
-        onTap: () {
-          if (_companyName.text.isEmpty) {
-            print('Enter company name');
-          } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return CreateStaffIDInputScreen(
-                    companyName: _companyName.text,
-                  );
-                },
-              ),
-            );
-          }
-        },
-        child: Container(
-          height: 60,
-          width: 200,
-          decoration: BoxDecoration(
-            color: const Color(0xFFFF0909),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text(
-                'Continue',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
+      floatingActionButton: isLoading
+          ? const CircularProgressIndicator(
+              backgroundColor: Color(0xFFFF0909),
+              color: Color(0xFFFFFFFF),
+            )
+          : GestureDetector(
+              onTap: () async {
+                if (_companyName.text.isEmpty) {
+                  print('Enter company ID number');
+                } else {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  final res = await _networkHandler
+                      .getCompanysData(int.parse(_companyName.text));
+                  if (res is CompanysData) {
+                    final CompanysData companyData = res;
+
+                    if (companyData.payload!.items!.isNotEmpty) {
+                      setState(() {
+                        isLoading = false;
+                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return CreateStaffIDInputScreen(
+                              companyName: _companyName.text,
+                            );
+                          },
+                        ),
+                      );
+                    } else {
+                      setState(() {
+                        isLoading = false;
+                      });
+                      print(
+                          "the response fro network ${companyData.totalCount}");
+                    }
+                  }
+                }
+              },
+              child: Container(
+                height: 60,
+                width: 200,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFF0909),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text(
+                      'Continue',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white,
+                    ),
+                  ],
                 ),
               ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.white,
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
@@ -79,10 +108,11 @@ class _CreateIDInputScreenState extends State<CreateIDInputScreen> {
             ),
             TextField(
               controller: _companyName,
+              keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                helperText: "Enter company's name",
+                helperText: "Enter company's ID number",
                 label: const Text(
-                  "Company's name",
+                  "Company's ID",
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 14,
