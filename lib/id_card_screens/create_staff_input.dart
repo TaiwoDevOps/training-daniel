@@ -1,3 +1,5 @@
+import 'package:company_id_card/core/network.dart';
+import 'package:company_id_card/data/get_company_id_res.dart';
 import 'package:company_id_card/data/staff_data.dart';
 import 'package:company_id_card/id_card_screens/preview_id.dart';
 import 'package:company_id_card/widget/id_card_appbar.dart';
@@ -14,6 +16,8 @@ class CreateStaffIDInputScreen extends StatefulWidget {
 }
 
 class _CreateStaffIDInputScreenState extends State<CreateStaffIDInputScreen> {
+  bool isLoading = true;
+  final NetworkHandler _networkHandler = NetworkHandler();
   final _staffName = TextEditingController();
   final _staffEmail = TextEditingController();
   final _staffPhone = TextEditingController();
@@ -21,6 +25,21 @@ class _CreateStaffIDInputScreenState extends State<CreateStaffIDInputScreen> {
   final _companyEmail = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  GetCompanyIdResponse? getCompanyIdResponse;
+
+  @override
+  void initState() {
+    var id = widget.companyName.split(":").last;
+    _networkHandler.getCompanyDataById(int.parse(id.trim())).then((value) {
+      if (value is GetCompanyIdResponse) {
+        getCompanyIdResponse = value;
+      } else {
+        print("This is what happened ======> $value");
+      }
+      setState(() => isLoading = false);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +57,64 @@ class _CreateStaffIDInputScreenState extends State<CreateStaffIDInputScreen> {
             children: [
               const SizedBox(
                 height: 50,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey, width: 2),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "ID: ${getCompanyIdResponse?.payload?.id ?? ''}",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Visibility(
+                          visible: isLoading,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "Course type name : ${getCompanyIdResponse?.payload?.courseTypeName ?? ''}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      "Date created : ${getCompanyIdResponse?.payload?.dateCreated?.split("T").first ?? ''}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      "Is Active : ${getCompanyIdResponse?.payload?.isActive ?? ''}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 12,
               ),
               const Text(
                 "kindly enter the staff information that you'd like to generate ID Card for",

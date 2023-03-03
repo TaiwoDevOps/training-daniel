@@ -51,7 +51,8 @@ class _CreateIDInputScreenState extends State<CreateIDInputScreen> {
                         MaterialPageRoute(
                           builder: (context) {
                             return CreateStaffIDInputScreen(
-                              companyName: _companyName.text,
+                              companyName:
+                                  "Staff Company ID : ${_companyName.text}",
                             );
                           },
                         ),
@@ -60,8 +61,6 @@ class _CreateIDInputScreenState extends State<CreateIDInputScreen> {
                       setState(() {
                         isLoading = false;
                       });
-                      print(
-                          "the response fro network ${companyData.totalCount}");
                     }
                   }
                 }
